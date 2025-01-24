@@ -117,13 +117,13 @@ function displaySummary(summary) {
     <div class="grid gap-4">
       <div class="bg-blue-50 p-4 rounded-lg">
         <p class="text-lg font-semibold text-blue-800">Total Amount Paid</p>
-        <p class="text-3xl font-bold text-blue-900">$${summary.totalAmountPaid.toFixed(2)}</p>
+        <p class="text-3xl font-bold text-blue-900">Ksh ${summary.totalAmountPaid.toFixed(2)}</p>
       </div>
       
       <div class="bg-${summary.profit > 0 ? 'green' : 'red'}-50 p-4 rounded-lg">
         <p class="text-lg font-semibold text-${summary.profit > 0 ? 'green' : 'red'}-800">Profit This Month</p>
         <p class="text-3xl font-bold text-${summary.profit > 0 ? 'green' : 'red'}-900">
-          $${summary.profit.toFixed(2)}
+          Ksh ${summary.profit.toFixed(2)}
           <span class="text-sm font-normal">(${summary.profitDescription})</span>
         </p>
       </div>
@@ -151,9 +151,9 @@ function displayMonthlyTotals(monthlyPayments, containerId) {
           ${Object.entries(monthlyPayments).map(([month, { total, profit }]) => `
             <tr class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${month}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${total.toFixed(2)}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Ksh ${total.toFixed(2)}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">
-                $${profit.toFixed(2)}
+                Ksh ${profit.toFixed(2)}
               </td>
             </tr>
           `).join('')}
