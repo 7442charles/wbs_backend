@@ -4,44 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="Assets/css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="shortcut icon" href="Assets/images/icon.png" type="image/jpeg">
   <title>Client Data Summary</title>
-  <style>
-    #summary {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f4f4f4;
-    }
-
-    canvas {
-      margin-top: 20px;
-    }
-
-    
-  </style>
-</head>
-<body>
-  <h1>Client Data Summary</h1>
-  <div id="summary"></div>
-  <canvas id="proceedsChart" width="400" height="400"></canvas>
   <script>
-    
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1a365d',
+            secondary: '#2d3748',
+          }
+        }
+      }
+    }
   </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <header class="mb-12 text-center">
+      <h1 class="text-4xl font-bold text-primary mb-4">WBS DASHBOARD</h1>
+      <div class="h-1 w-32 bg-blue-500 mx-auto rounded"></div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Summary Section -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <div id="summary" class="space-y-4"></div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <canvas id="proceedsChart" class="w-full max-w-lg mx-auto"></canvas>
+      </div>
+    </div>
+  </div>
+
   <script src="Assets/js/main.js"></script>
 </body>
 </html>

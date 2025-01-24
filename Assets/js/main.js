@@ -6,19 +6,24 @@ fetch(url)
   .then(response => response.text())
   .then(csvText => {
     const rows = csvText.split("\n").map(row => row.split(","));
-
-    const headers = rows[0]; // Extract headers
+    const headers = rows[0];
     const data = rows.slice(1).map(row => {
       const obj = {};
       row.forEach((cell, index) => {
-        obj[headers[index]] = cell.trim(); // Trim spaces for cleaner data
+        obj[headers[index]] = cell.trim();
       });
       return obj;
     });
-
     processClientData(data);
   })
-  .catch(error => console.error("Error fetching spreadsheet:", error));
+  .catch(error => {
+    console.error("Error fetching spreadsheet:", error);
+    document.getElementById("summary").innerHTML = `
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        Error loading data. Please try again later.
+      </div>
+    `;
+  });
 
 function processClientData(data) {
   const rates = {
@@ -38,7 +43,6 @@ function processClientData(data) {
     const clientStatus = row["Status"];
     const totalAmount = calculateAmount(row["Time"], rates);
 
-    // Count active clients based on Status column
     if (!clientStatus || clientStatus.toLowerCase() !== "removed") {
       activeClients++;
     }
@@ -54,7 +58,6 @@ function processClientData(data) {
 
         monthlyPayments[monthYear].total += totalAmount;
 
-        // Check if the monthYear is the current month and calculate profit
         if (monthYear === currentMonthYear) {
           profitThisMonth += totalAmount;
         }
@@ -64,14 +67,12 @@ function processClientData(data) {
     }
   });
 
-  const profitDescription =
-    profitThisMonth > ISP_COST
-      ? "Positive Profit"
-      : profitThisMonth === ISP_COST
-      ? "Neutral Profit"
-      : "Negative Profit";
+  const profitDescription = profitThisMonth > ISP_COST
+    ? "Positive Profit"
+    : profitThisMonth === ISP_COST
+    ? "Neutral Profit"
+    : "Negative Profit";
 
-  // Update the webpage with summary and monthly totals
   displaySummary({
     activeClients,
     totalAmountPaid,
@@ -113,50 +114,54 @@ function getMonthName(monthIndex) {
 function displaySummary(summary) {
   const summaryDiv = document.getElementById("summary");
   summaryDiv.innerHTML = `
-    
-    <p><strong>Total Amount Paid:</strong> ${summary.totalAmountPaid}</p>
-    <p><strong>Profit This Month:</strong> ${summary.profit} (${summary.profitDescription})</p>
+    <div class="grid gap-4">
+      <div class="bg-blue-50 p-4 rounded-lg">
+        <p class="text-lg font-semibold text-blue-800">Total Amount Paid</p>
+        <p class="text-3xl font-bold text-blue-900">$${summary.totalAmountPaid.toFixed(2)}</p>
+      </div>
+      
+      <div class="bg-${summary.profit > 0 ? 'green' : 'red'}-50 p-4 rounded-lg">
+        <p class="text-lg font-semibold text-${summary.profit > 0 ? 'green' : 'red'}-800">Profit This Month</p>
+        <p class="text-3xl font-bold text-${summary.profit > 0 ? 'green' : 'red'}-900">
+          $${summary.profit.toFixed(2)}
+          <span class="text-sm font-normal">(${summary.profitDescription})</span>
+        </p>
+      </div>
+    </div>
   `;
 }
 
 function displayMonthlyTotals(monthlyPayments, containerId) {
   const summaryDiv = document.getElementById(containerId);
   const totalsDiv = document.createElement("div");
+  totalsDiv.className = "mt-8";
 
-  totalsDiv.innerHTML = "<h2>Monthly Totals</h2>";
-  const table = document.createElement("table");
+  totalsDiv.innerHTML = `
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Monthly Totals</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-lg overflow-hidden">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profit</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          ${Object.entries(monthlyPayments).map(([month, { total, profit }]) => `
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${month}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${total.toFixed(2)}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">
+                $${profit.toFixed(2)}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 
-  const thead = document.createElement("thead");
-  const headerRow = document.createElement("tr");
-  ["Month", "Total Amount", "Profit"].forEach(header => {
-    const th = document.createElement("th");
-    th.textContent = header;
-    headerRow.appendChild(th);
-  });
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  for (const [month, { total, profit }] of Object.entries(monthlyPayments)) {
-    const row = document.createElement("tr");
-
-    const monthCell = document.createElement("td");
-    monthCell.textContent = month;
-    row.appendChild(monthCell);
-
-    const totalCell = document.createElement("td");
-    totalCell.textContent = total.toFixed(2);
-    row.appendChild(totalCell);
-
-    const profitCell = document.createElement("td");
-    profitCell.textContent = profit.toFixed(2);
-    row.appendChild(profitCell);
-
-    tbody.appendChild(row);
-  }
-  table.appendChild(tbody);
-
-  totalsDiv.appendChild(table);
   summaryDiv.appendChild(totalsDiv);
 }
 
@@ -169,19 +174,34 @@ function displayProceedsChart(profitThisMonth) {
   new Chart(ctx, {
     type: "pie",
     data: {
-      labels: ["Paid (Blue)", "Remaining (Red)", "Profit (Green)"],
-      datasets: [
-        {
-          data: [profitThisMonth, remaining, profit],
-          backgroundColor: ["blue", "red", "green"]
-        }
-      ]
+      labels: ["Revenue", "Remaining", "Profit"],
+      datasets: [{
+        data: [profitThisMonth, remaining, profit],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)', // Blue
+          'rgba(239, 68, 68, 0.8)',  // Red
+          'rgba(34, 197, 94, 0.8)'   // Green
+        ],
+        borderColor: [
+          'rgba(59, 130, 246, 1)',
+          'rgba(239, 68, 68, 1)',
+          'rgba(34, 197, 94, 1)'
+        ],
+        borderWidth: 1
+      }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: "top"
+          position: "bottom",
+          labels: {
+            padding: 20,
+            font: {
+              size: 14
+            }
+          }
         }
       }
     }
