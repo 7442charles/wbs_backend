@@ -174,20 +174,6 @@
       localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     });
 
-    // Hanlde page title
-    document.addEventListener("DOMContentLoaded", () => {
-        const selectedMonth = sessionStorage.getItem("selectedMonth");
-        const storedTitle = sessionStorage.getItem("pageTitle"); // ✅ Get stored title
-
-        if (selectedMonth) {
-            document.getElementById("page-title").innerText = `${selectedMonth} Records`;
-
-            // ✅ Ensure title remains correct after loading
-            if (storedTitle) {
-            document.title = storedTitle; // ✅ Keep the title after page load
-            }
-        }
-        });
 
   </script>
 </body>

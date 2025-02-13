@@ -226,10 +226,10 @@ function displayProceedsChart(profitThisMonth) {
 
 function filterMonthRecords(selectedMonth) {
 
-  // ✅ Store selected month in sessionStorage
+  //  Store selected month in sessionStorage
   sessionStorage.setItem("selectedMonth", selectedMonth);
 
-  // ✅ Store the title in sessionStorage so it persists after reload
+  //  Store the title in sessionStorage so it persists after reload
   sessionStorage.setItem("pageTitle", `${selectedMonth} Summary | WBS Dashboard`);
 
   fetch(url) // Fetch data from Google Sheets CSV
@@ -245,10 +245,10 @@ function filterMonthRecords(selectedMonth) {
         return obj;
       });
 
-      // ✅ Store full dataset in sessionStorage
+      //  Store full dataset in sessionStorage
       sessionStorage.setItem("fullClientData", JSON.stringify(data));
 
-      // ✅ Now filter the month
+      //  Now filter the month
       filterAndStoreMonthRecords(selectedMonth);
     })
     .catch(error => {
@@ -257,7 +257,7 @@ function filterMonthRecords(selectedMonth) {
     });
 }
 
-// ✅ Function to filter and store records for the selected month
+//  Function to filter and store records for the selected month
 function filterAndStoreMonthRecords(selectedMonth) {
   const storedData = sessionStorage.getItem("fullClientData");
 
@@ -272,22 +272,22 @@ function filterAndStoreMonthRecords(selectedMonth) {
     return rowMonthYear === selectedMonth;
   });
 
-  console.log("Filtered Data:", filteredData); // ✅ Log filtered data
+  console.log("Filtered Data:", filteredData); //  Log filtered data
 
   if (filteredData.length === 0) {
     alert("No records found for this month.");
     return;
   }
 
-  // ✅ Store the filtered data in sessionStorage
+  //  Store the filtered data in sessionStorage
   sessionStorage.setItem("filteredMonthData", JSON.stringify(filteredData));
   sessionStorage.setItem("selectedMonth", selectedMonth);
 
-  // ✅ Redirect without passing data in URL
+  //  Redirect without passing data in URL
   window.location.href = "filtered-records.html";
 }
 
-// ✅ Extracts month and year from dates like "2/8/2025"
+//  Extracts month and year from dates like "2/8/2025"
 function extractMonthYear(dateStr) {
   if (!dateStr) return null;
   const parts = dateStr.split("/"); // Split "M/D/YYYY"
@@ -297,7 +297,7 @@ function extractMonthYear(dateStr) {
   return `${getMonthName(month)} ${year}`; // Convert to "February 2025"
 }
 
-// ✅ Converts month number to month name
+//  Converts month number to month name
 function getMonthName(monthIndex) {
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -311,6 +311,6 @@ function getMonthName(monthIndex) {
 
 //   if (selectedMonth) {
 //     document.getElementById("page-title").innerText = `${selectedMonth} Records`;
-//     document.title = `${selectedMonth} Summary | WBS Dashboard`; // ✅ Update page title
+//     document.title = `${selectedMonth} Summary | WBS Dashboard`; //  Update page title
 //   }
 // });
