@@ -225,7 +225,6 @@ function displayProceedsChart(profitThisMonth) {
 }
 
 function filterMonthRecords(selectedMonth) {
-  console.log("Selected Month:", selectedMonth); // ✅ Log the clicked month
 
   // ✅ Store selected month in sessionStorage
   sessionStorage.setItem("selectedMonth", selectedMonth);
